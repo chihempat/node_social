@@ -1,0 +1,31 @@
+<%-include ("./partials/header"); %>
+
+    <div class="jumbotron">
+        <h1 class="display-3">Hello!</h1>
+        <p class="lead">
+            <div class="details lead mb-3">
+                <div class="card text-black bg-white mb-3">
+                    <div class="card-title">Your Details</div>
+
+                    <p class="card-text">
+                        <strong>Name</strong>:
+                        <%= user.name %><br>
+                            <strong>Email</strong>:
+                            <%= user.email %><br>
+                                <strong>Username</strong>:
+                                <%= user.username %><br>
+                                    <strong>Gender</strong>:
+                                    <%= user.gender %><br>
+                                        <strong>City</strong>:
+                                        <%= user.address[0].city %><br>
+                                            <strong>State</strong>:
+                                            <%= user.address[0].state %><br>
+                    </p>
+                </div>
+                <h4 class="card-title">
+                    <%= user.bio %>
+                </h4>
+            </div>
+            <a href="/user/edit" class="btn btn-primary btn-lg">Edit</a>
+            <a href="/auth/logout" class="btn btn-danger btn-lg">Logout</a>
+    </div>

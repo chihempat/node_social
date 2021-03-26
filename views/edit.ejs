@@ -1,0 +1,52 @@
+<style>
+    input[type="radio"] {
+        -webkit-appearance: radio;
+    }
+</style>
+<%-include ("./partials/header"); %>
+    <div class="row mt-5">
+        <div class="col-md-6 m-auto">
+            <div class="card card-body">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-user"></i> Edit
+                </h1>
+                <form action="/user/edit" method="POST">
+                    <div class="form-group">
+
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="<%=(!!locals.user.name)?locals.user.name: '' %>" value="<%=(!!locals.user.name)?locals.user.name:" " %>" />
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" for="username" class="form-control" name="username" value=<%=(!!locals.user.username)?locals.user.username: '' %> />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="<%=(!!locals.user.email)?locals.user.email: '' %>" value="<%=(!!locals.user.email)?locals.user.email: '' %>" />
+                    </div>
+                    <div>
+                        <label for="Gender">Gender</label><br>
+                        <input type="radio" id="male" name="gender" value="male">
+                        <label for="male">Male</label><br>
+                        <input type="radio" id="female" name="gender" value="female">
+                        <label for="female">Female</label><br>
+                        <input type="radio" id="other" name="gender" value="other">
+                        <label for="other">Other</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="Address">Address</label><br>
+                        <input type="text" id="city" name="city" class="form-control" placeholder="<%=(!!locals.user.address.city)?usr.city: '' %>" value="<%=(!!locals.user.address.city)?locals.user.address.city: '' %>" />
+                        <br>
+                        <input type="text" id="state" name="state" class="form-control" placeholder="<%=(!!locals.user.address.state)?usr.state: '' %>" value="<%=(!!locals.user.address.state)?locals.user.address.state: '' %>" />
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">BIO</label><br>
+                        <input type="textArea" id="bio" name="bio" class="form-control" placeholder="Tell us about your self" value="<%=(!!locals.user.bio)?locals.user.bio: '' %>" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+          Save
+        </button>
+                </form>
+            </div>
+        </div>
+    </div>

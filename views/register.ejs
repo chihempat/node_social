@@ -1,0 +1,81 @@
+<div class="row mt-5">
+    <div class="col-md-6 m-auto">
+        <div class="card card-body">
+            <h1 class="text-center mb-3">
+                <i class="fas fa-user-plus"></i> Register
+            </h1>
+
+            <form action="/auth/register" method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="name" id="name" name="name" class="form-control" placeholder="Enter Name" value="<%= typeof name != 'undefined' ? name : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" for="username" class="form-control" name="username" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email" value="<%= typeof email != 'undefined' ? email : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Create Password" value="<%= typeof password != 'undefined' ? password : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirm Password" value="<%= typeof password2 != 'undefined' ? password2 : '' %>" />
+                </div>
+                <div class="form-group">
+                    <label for="Gender">Gender</label><br> Female
+                    <input type="Radio" id="gender" name="gender" value="Female" />
+                    <span class="tab"></span> Male
+                    <input type="Radio" id="gender" name="gender" value="Male" />
+                    <span class="tab"></span> Other
+                    <input type="Radio" id="gender" name="gender" value="Other" />
+                    <span class="tab"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Age">AGE</label>
+                    <input type="age" id="age" name="age" class="form-control" placeholder="age" value="<%= typeof age != 'undefined' ? age : '' %>" />
+                </div>
+
+
+                <div class="form-group">
+                    <label for="Address">Address</label><br>
+                    <input type="text" id="city" name="city" class="form-control" placeholder="city" />
+                    <br>
+                    <input type="text" id="state" name="state" class="form-control" placeholder="state" />
+                    <br>
+                    <input type="text" id="country" name="country" class="form-control" placeholder="country" />
+                </div>
+                <div class="form-group">
+                    <label for="bio">BIO</label><br>
+                    <input type="TextArea" id="bio" name="bio" class="form-control" placeholder="Tell us about your self" />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+          Register
+        </button>
+            </form>
+            <p class="lead mt-4">Have An Account? <a href="/auth/login">Login</a></p>
+        </div>
+    </div>
+</div>
+<style>
+    .rb {
+        align-self: center;
+    }
+    
+    input[type="Radio"] {
+        color: #f2f2f2;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        margin-right: 1em;
+    }
+    
+    .tab {
+        display: inline-block;
+        margin-left: 40px;
+    }
+</style>

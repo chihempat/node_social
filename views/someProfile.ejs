@@ -1,0 +1,38 @@
+<%- include ("./partials/header"); %>
+    <div class="container">
+        <h1 lead mb-3>
+            Profile Page
+        </h1>
+        <div class="details lead mb-3">
+            <div class="card text-xs-center card-body">
+                <br>
+                <p class="lead mb-3">
+                    <h4 class="cmt-4">User Detaiils
+                    </h4>
+                    <p class="lead mb-3">
+                        <strong>Name</strong>:
+                        <%= List.name %><br>
+                            <strong>Email</strong>:
+                            <%= List.email %><br>
+                                <strong>Username</strong>:
+                                <%= List.username %><br>
+                                    <strong>Gender</strong>:
+                                    <%= List.gender %><br>
+                                        <strong>Bio</strong>:
+                                        <%= List.bio %><br>
+                                            <strong>City</strong>:
+                                            <%= List.address[0].city %><br>
+                                                <strong>State</strong>:
+                                                <%= List.address[0].state %><br>
+
+                    </p>
+                    <%if (List.username != locals.user.username) { %>
+                        <form action='/user/sendRequest' method="post">
+                            <input type="hidden" name="username" id="username" value="<%=List.username%>">
+                            <button type="submit" class="btn btn-success">Sent Request</buttton>
+                    </form>
+                    <% }%>
+            </div>
+        </div>
+    </div>
+    <% include ("./partials/footer"); %>

@@ -1,0 +1,42 @@
+<%-include ("./partials/header"); %>
+    <div class="jumbotron">
+        <table>
+
+            <th rowspan='10'>
+                <h3 class="display-3">
+                    Dashboard
+                </h3>
+
+                <h3 class="lead mb-5">Welcome
+                    <%= user.name %>
+                </h3>
+            </th>
+
+            <th>
+
+            </th>
+
+        </table>
+        <form class="form-inline my-2 my-lg-0" action='/user/searching' method="POST">
+            <input class="form-control mr-sm-2 form-control" type="text" for="name" name="name" placeholder="Serch user by name">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <hr class='lead mb-3'>
+        <p>
+            <%=user.bio%>
+        </p>
+
+        <p class="lead">
+            <a class="btn btn-primary btn" role="button" href="/user"> Your Profile</a><br><br>
+            <a class="btn btn-primary btn" role="button" href="/user/search"> Search</a><br><br>
+            <a class="btn btn-primary btn" role="button" href="/user/friends"> All Friends</a><br><br>
+            <a class="btn btn-primary btn" role="button" href="/user/requests"> Pending Requests</a><br><br>
+            <a class="btn btn-primary btn" role="button" href="/user/sentRequests"> Sent Requests</a><br><br>
+        </p>
+        <a href="/auth/logout" class="btn btn-danger">Logout</a>
+
+
+
+
+    </div>
+    </div>

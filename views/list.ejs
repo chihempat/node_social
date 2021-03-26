@@ -1,0 +1,50 @@
+<%-include ("./partials/header");%>
+    <% if(!List){%>
+        <div class="alert alert-dismissible alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Oh snap!</strong> <a href="/dashboard" class="alert-link">You Didnt Sent any friend Requests</a>
+        </div>
+        <% }else{ %>
+
+            <table class="table dataTable">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">_id</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Profile</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <% for(i=0;i<List.length;i++) {%>
+                    <tbody>
+                        <tr>
+                            <th scope="row">
+                                <%= i+1%>
+                            </th>
+                            <td>
+                                <%= List[i].userId %>
+                            </td>
+                            <td>
+                                <%= List[i].username %>
+                            </td>
+
+                            <td>
+                                <form method="POST" action="/user/searchUser">
+                                    <input type="hidden" class="form-control" name="username" value='<%=List[i].username%>'>
+                                    <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST" action="/user/<%=route%>">
+                                    <input type="hidden" class="form-control" name="username" value='<%=List[i].username%>'>
+                                    <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId%>'>
+                                    <button type="submit" class="btn btn-outline-success"><%=route%></button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tr>
+                    </tbody>
+                    <% }%>
+            </table>
+            <%  }%>
