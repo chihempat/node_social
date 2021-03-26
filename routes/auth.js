@@ -109,7 +109,7 @@ router.post('/register', forwardAuthenticated, (req, res) => {
     }
 });
 // Login
-router.post('/login', forwardAuthenticated, (req, res, next) => {
+router.post('/login', (req, res, next) => {
     console.log("in login post")
     passport.authenticate('local', {
         successRedirect: '/user/dashboard',

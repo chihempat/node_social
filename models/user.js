@@ -21,9 +21,7 @@ const UserSchema = new Schema({
     sendRequests: [{
         username: {
             type: String,
-            default: '',
-            unique: true,
-            sparse: true,
+            default: ''
         }
     }],
     requestList: [{
