@@ -5,19 +5,20 @@ const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const { filterByState, filterByCity, findUse, findall } = require('../controller/querys');
 const User = require('../models/User');
 var c = 0;
-
+global.friends = undefined;
 
 
 //  @desc   :For sending request
 //  @route :POST/sendRequest
 router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
+
     console.log(req.body.username)
     User.findOneAndUpdate({
             'username': req.body.username,
             'requestList.userId': { $ne: req.user._id },
             'friendsList.friendId': { $ne: req.user._id }
         }, {
-            $push: { requestList: { username: req.user.username, userId: req.user._id } }
+            $push: { requestList: { userId: req.user._id, username: req.user.username, } }
         }, { new: true })
         .then((cb) => {
             if (cb) {
@@ -32,12 +33,11 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
                             console.log(cb1);
                             res.redirect("/dashboard")
                         } else {
-                            res.redirect('./partials/404')
+                            res.render('404')
                         }
                     }).catch(err => console.log(err))
-
             } else {
-                res.redirect('./partials/404')
+                res.redirect('404')
             }
         })
 
@@ -112,52 +112,110 @@ router.post('/acceptRequest', (req, res, next) => {
 //  @desc   :For dropping request
 //  @route :POST/dropRequest
 //  @from  :list/sentrequests
-router.post('/dropRequest', ensureAuthenticated, (req, res, next) => {
-    const user = req.user.username;
-    const sender = req.body.username;
-    console.log(sender)
-    console.log(user)
-    User.updateOne({
-            '_id': req.user._id,
-            'sendRequest.username': { $eq: req.body.username }
-        }, {
-            $pull: {
-                sendRequest: {
-                    username: req.body.username
+
+router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
+
+    try {
+        async.parallel([
+            function(callback) {
+                console.log("1");
+                if (req.body.username) {
+                    console.log("2");
+                    User.updateOne({
+                        'username': req.body.username,
+                        'requestList.userId': { $eq: req.user._id }
+                    }, {
+                        $pull: {
+                            requestList: {
+                                userId: req.body._id,
+                                username: req.body.username
+                            }
+                        }
+                    }, (err, count) => {
+                        console.log("3");
+                        callback(err, count);
+                    });
                 }
             },
-        }).then((cb) => {
-            if (cb) {
-                console.log("sendRequest dropped")
-                console.log(cb)
-            } else {
-                console.log("error")
-                console.error
+            function(callback) {
+                console.log("4");
+                if (req.body.username) {
+                    console.log("5");
+
+                    User.updateOne({
+                        'username': req.user.username,
+                        'sendRequests.username': { $eq: req.body.username }
+                    }, {
+                        $pull: {
+                            sendRequests: {
+                                username: req.body.username
+                            }
+                        }
+                    }, (err, count) => {
+                        console.log("6");
+                        callback(err, count);
+                    });
+                }
             }
-        })
-        .catch((err) => { console.log(err) });
-
-    User.updateOne({
-        'username': req.body.username,
-        'requestList.userId': { $eq: req.user._id }
-    }, {
-        $pull: {
-            requestList: {
-                userId: req.user._id,
-                username: req.user.username
-            }
-        }
-    }).then(cb => console.log((cb) => {
-        if (cb) {
-            console.log("firends dropped")
-            console.log(cb)
-        } else {
-            console.log("error")
-        }
-    })).catch(err => console.log(err));
-
-
+        ], (err, results) => {
+            res.redirect('/');
+        });
+    } catch (err) {
+        console.log(err)
+    }
 });
+
+router.post('/dropRequest', ensureAuthenticated, async(req, res, next) => {
+
+    try {
+        async.parallel([
+            function(callback) {
+                console.log("1");
+                if (req.user._id) {
+                    console.log("2");
+                    User.updateOne({
+                        '_id': req.user._id,
+                        'requestList.userId': { $eq: req.body._id }
+                    }, {
+                        $pull: {
+                            requestList: {
+                                userId: req.body._id,
+                                username: req.body.username
+                            }
+                        }
+                    }, (err, count) => {
+                        console.log("3");
+                        callback(err, count);
+                    });
+                }
+            },
+            function(callback) {
+                console.log("4");
+                if (req.user._id) {
+                    console.log("5");
+                    User.updateOne({
+                        '_id': req.body._id,
+                        'sendRequests.username': { $eq: req.body.username }
+                    }, {
+                        $pull: {
+                            sendRequests: {
+                                username: req.body.username
+                            }
+                        }
+                    }, (err, count) => {
+                        console.log("6");
+                        callback(err, count);
+                    });
+                }
+            }
+        ], (err, results) => {
+            res.redirect('/');
+        });
+    } catch (err) {
+        console.log(err)
+    }
+});
+
 
 //  @desc   :For dropping friend
 //  @route :POST/dropFriend
@@ -213,10 +271,12 @@ router.post('/dropFriend', ensureAuthenticated, (req, res, next) => {
 //  @route :GET/sentRequests
 //  @to  :list/dropRequest
 router.get('/sentRequests', ensureAuthenticated, async(req, res, next) => {
+
+
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.sendRequests;
-    console.log(request[0].username)
-    res.render('list', { 'List': request, "route": "dropRequest" })
+    //  console.log(request[0].username)
+    res.render('list', { 'List': request, "route": "dropSentRequest" })
 });
 
 // @desc   :For showing incoming request
@@ -226,7 +286,7 @@ router.get('/requests', ensureAuthenticated, async(req, res, next) => {
     const user = req.user.username;
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.requestList;
-    res.render('list', { 'List': request, 'route': 'acceptRequest' })
+    res.render('list', { 'List': request, 'route': 'dropRequest', 'route1': 'AcceptRequest' })
 });
 
 //  @desc   :For showing friends request
@@ -286,12 +346,22 @@ router.post('/edit', ensureAuthenticated, (req, res, next) => {
 //  @desc   :For getiing to dashboard
 //  @route  :get/dashborad
 router.get('/dashboard', ensureAuthenticated, (req, res, next) => {
+    console.log(req.user.friendsList);
+    f = req.user.friendsList;
+
+    User.aggregate([
+        { $match: { username: req.user.username } },
+        { $unwind: "$friendsList" }
+    ]).then(cb => f = cb);
+    console.log(friends)
+        // console.log(f)
     res.render('dashboard')
 });
 
 //  @desc   :For redirecting to profile
 //  @route  :get/
 router.get('/', ensureAuthenticated, (req, res, next) => {
+
     res.render('profile')
 });
 
