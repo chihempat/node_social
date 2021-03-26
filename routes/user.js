@@ -11,9 +11,8 @@ global.friends = undefined;
 //  @desc   :For sending request
 //  @route :POST/sendRequest
 router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
-
     console.log(req.body.username)
-    User.findOneAndUpdate({
+    User.updateOne({
             'username': req.body.username,
             'requestList.userId': { $ne: req.user._id },
             'friendsList.friendId': { $ne: req.user._id }
@@ -23,7 +22,7 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
         .then((cb) => {
             if (cb) {
                 console.log("in sendRequest Part two")
-                User.findOneAndUpdate({
+                User.updateOne({
                         'username': req.user.username,
                         'sentRequests.username': { $ne: req.body.username }
                     }, { $push: { sendRequests: { username: req.body.username } } })
@@ -102,9 +101,6 @@ router.post('/acceptRequest', (req, res, next) => {
         }
 
     }, { new: true }).catch(err => console.log(err))
-
-
-
 });
 //res.redirect('/dashboard');
 
@@ -165,6 +161,9 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
     }
 });
 
+//  @desc   :For rejecting pending request
+//  @route :POST/dropRequest
+//  @from  :list/sentReuest
 router.post('/dropRequest', ensureAuthenticated, async(req, res, next) => {
 
     try {
@@ -286,7 +285,7 @@ router.get('/requests', ensureAuthenticated, async(req, res, next) => {
     const user = req.user.username;
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.requestList;
-    res.render('list', { 'List': request, 'route': 'dropRequest', 'route1': 'AcceptRequest' })
+    res.render('list', { 'List': request, 'route': 'dropRequest' })
 });
 
 //  @desc   :For showing friends request

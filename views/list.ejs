@@ -20,6 +20,7 @@
                     <tbody>
                         <tr>
                             <th scope="row">
+                                <%= i+1  %>
                             </th>
                             <td>
                                 <%= List[i].userId %>
@@ -34,22 +35,33 @@
                                     <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
                                 </form>
                             </td>
-                            <td>
-                                <% if(route=="dropRequest") {%>
+
+                            <% if(route=="dropRequest") {%>
+                                <td>
                                     <form method="POST" action="/user/acceptRequest">
                                         <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                         <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
-                                        <button type="submit" class="btn btn-outline-success">Accept Request</button>
+                                        <button type="submit" class="btn btn-success">Accept Request</button>
                                     </form>
-                                    <% }%><br>
-                                        <form method="POST" action="/user/<%=route%>">
+                                </td>
+                                <td>
+
+                                    <form method="POST" action="/user/dropRequest">
+                                        <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
+                                        <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
+                                        <button type="submit" class="btn btn-danger">Reject Request</button>
+                                    </form>
+
+                                </td>
+                                <% }else{%>
+                                    <td>
+                                        <form method="POST" action="/user/dropSentRequest">
                                             <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                             <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
-                                            <button type="submit" class="btn btn-outline-danger"><%=route%></button>
+                                            <button type="submit" class="btn btn-outline-danger">Drop Request</button>
                                         </form>
-
-                            </td>
-
+                                    </td>
+                                    <% }%>
                         </tr>
                         </tr>
                     </tbody>
