@@ -132,7 +132,6 @@ router.post('/dropRequest', ensureAuthenticated, (req, res, next) => {
                 console.log(cb)
             } else {
                 console.log("error")
-                console.error
             }
         })
         .catch((err) => { console.log(err) });
@@ -150,7 +149,7 @@ router.post('/dropRequest', ensureAuthenticated, (req, res, next) => {
     }).then(cb => console.log((cb) => {
         if (cb) {
             console.log("firends dropped")
-            console.log(cb)
+                //console.log(cb)
         } else {
             console.log("error")
         }
