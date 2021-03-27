@@ -16,9 +16,9 @@
                 <th scope="col">Name</th>
                 <th scope="col">Username</th>
                 <th scope="col">Email</th>
-                <th scope="col">Gender</th>
                 <th scope="col">City</th>
                 <th scope="col">State</th>
+                <th scope="col">Profile</th>
                 <th scope="col">Profile</th>
             </tr>
         </thead>
@@ -34,22 +34,26 @@
                     <%= List[i].email %>
                 </td>
                 <td>
-                    <%= List[i].gender %>
-                </td>
-                <td>
                     <%= JSON.stringify(List[i].address).split('"')[3] %>
                 </td>
                 <td>
                     <%= JSON.stringify(List[i].address).split('"')[7] %>
                 </td>
                 <td>
-                    <form method="POST" action="/user/searchUser">
+                    <form method="GET" action="/user/searchUser">
                         <input type="hidden" class="form-control" id="username" name="username" value='<%=List[i].username%>'>
                         <input type="hidden" class="form-control" id="name" name="name" value='<%=List[i].name%>'>
                         <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
                     </form>
                 </td>
-                </tr>
+                <% if(!sr.includes(List[i].username)){%>
+                    <td>
+                        <form action='/user/sendRequest' method="POST">
+                            <input type="hidden" name="username" id="username" value="<%=List[i].username%>">
+                            <button type="submit" class="btn btn-success">sentRequest</buttton>
+                        </form>
+                    </td>
+                <% }%>
 
                 <% } %>
             </tbody>

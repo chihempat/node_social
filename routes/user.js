@@ -3,17 +3,14 @@ const router = express.Router();
 const async = require('async');
 const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
 const { filterByState, filterByCity, findUse, findall } = require('../controller/querys');
+const { checkfriend, checksent, checkrequest, updateData, check } = require('../config/check');
 const User = require('../models/User');
 var c = 0;
-global.friends = undefined;
-
 
 //  @desc   :For sending request
 //  @route :POST/sendRequest
-router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
-
-    console.log(req.body.username)
-    User.findOneAndUpdate({
+router.post('/sendRequest', ensureAuthenticated, check, (req, res, next) => {
+    User.updateOne({
             'username': req.body.username,
             'requestList.userId': { $ne: req.user._id },
             'friendsList.friendId': { $ne: req.user._id }
@@ -23,7 +20,7 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
         .then((cb) => {
             if (cb) {
                 console.log("in sendRequest Part two")
-                User.findOneAndUpdate({
+                User.updateOne({
                         'username': req.user.username,
                         'sentRequests.username': { $ne: req.body.username }
                     }, { $push: { sendRequests: { username: req.body.username } } })
@@ -31,7 +28,7 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
                         if (cb1) {
                             console.log("REQ Sent")
                             console.log(cb1);
-                            res.redirect("/dashboard")
+                            res.redirect("/search")
                         } else {
                             res.render('404')
                         }
@@ -40,7 +37,6 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
                 res.redirect('404')
             }
         })
-
 });
 
 
@@ -48,73 +44,72 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
 //  @route  :POST/acceptRequest
 //  @from   :list/request
 router.post('/acceptRequest', (req, res, next) => {
-    console.log("in ar")
-    console.log(req.body)
-    const id = req.user._id || "605c3ae822550c5b8d01a927";
-    const username = req.user.username || "Macey27";
+    if (fr.includes(req.body._id)) {
+        res.json('Already Friend')
+    } else {
 
-    User.updateOne({
-        '_id': req.body._id,
-        'friendsList.friendId': { $ne: req.user._id }
-    }, {
-        $push: {
-            friendsList: {
-                friendId: req.user._id,
-                friendName: req.user.username
-            }
-        },
-        $pull: {
-            sendRequests: {
-                username: req.user.username
-            }
-        }
-    }, { new: true }).then((cb) => {
-        if (cb) {
-            console.log("done sender part")
-            console.log(cb)
-            User.updateOne({
-                '_id': req.user._id,
-                'friendsList.friendId': { $ne: req.body._id }
-            }, {
-                $push: {
-                    friendsList: {
-                        friendId: req.body._id,
-                        friendName: req.body.username
-                    }
-                },
-                $pull: {
-                    requestList: {
-                        userId: req.body._id,
-                        username: req.body.username
-                    }
+        console.log("in ar")
+
+        User.updateOne({
+            '_id': req.body._id,
+            'friendsList.friendId': { $ne: req.user._id }
+        }, {
+            $push: {
+                friendsList: {
+                    friendId: req.user._id,
+                    friendName: req.user.username
                 }
-            }).then(us => {
-                if (us) {
-                    console.log(us);
-                    console.log("done user part")
-                    res.redirect('/friends')
-                } else {
-                    res.redirect('404')
+            },
+            $pull: {
+                sendRequests: {
+                    username: req.user.username
                 }
-            }).catch(err => console.log(err));
-        } else {
-            res.redirect('404')
-        }
+            }
+        }, { new: true }).then((cb) => {
+            if (cb) {
+                console.log("done sender part")
+                console.log(cb)
+                User.updateOne({
+                    '_id': req.user._id,
+                    'friendsList.friendId': { $ne: req.body._id }
+                }, {
+                    $push: {
+                        friendsList: {
+                            friendId: req.body._id,
+                            friendName: req.body.username
+                        }
+                    },
+                    $pull: {
+                        requestList: {
+                            userId: req.body._id,
+                            username: req.body.username
+                        }
+                    }
+                }).then(us => {
+                    if (us) {
+                        console.log(us);
+                        console.log("done user part")
+                        res.redirect('/friends')
+                    } else {
+                        res.redirect('404')
+                    }
+                }).catch(err => console.log(err));
+            } else {
+                res.redirect('404')
+            }
 
-    }, { new: true }).catch(err => console.log(err))
-
-
-
+        }, { new: true }).catch(err => console.log(err))
+    }
 });
+
 //res.redirect('/dashboard');
 
-
-//  @desc   :For dropping request
-//  @route :POST/dropRequest
+//change to delete
+//  @desc   :For dropping already sent request
+//  @route :POST/dropSentRequest
 //  @from  :list/sentrequests
 
 router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
-
     try {
         async.parallel([
             function(callback) {
@@ -164,7 +159,10 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
         console.log(err)
     }
 });
-
+//change to delete
+//  @desc   :For rejecting pending request
+//  @route :POST/dropRequest
+//  @from  :list/sentReuest
 router.post('/dropRequest', ensureAuthenticated, async(req, res, next) => {
 
     try {
@@ -216,15 +214,12 @@ router.post('/dropRequest', ensureAuthenticated, async(req, res, next) => {
     }
 });
 
-
+//change to deleye
 //  @desc   :For dropping friend
 //  @route :POST/dropFriend
 //  @from  :tables/friends
 router.post('/dropFriend', ensureAuthenticated, (req, res, next) => {
-    const user = req.user.username;
-    const sender = req.body.username;
-    console.log(sender)
-    console.log(user)
+
     User.updateOne({
             '_id': req.user._id,
         }, {
@@ -271,8 +266,6 @@ router.post('/dropFriend', ensureAuthenticated, (req, res, next) => {
 //  @route :GET/sentRequests
 //  @to  :list/dropRequest
 router.get('/sentRequests', ensureAuthenticated, async(req, res, next) => {
-
-
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.sendRequests;
     //  console.log(request[0].username)
@@ -286,7 +279,7 @@ router.get('/requests', ensureAuthenticated, async(req, res, next) => {
     const user = req.user.username;
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.requestList;
-    res.render('list', { 'List': request, 'route': 'dropRequest', 'route1': 'AcceptRequest' })
+    res.render('list', { 'List': request, 'route': 'dropRequest' })
 });
 
 //  @desc   :For showing friends request
@@ -320,7 +313,7 @@ router.get('/edit', ensureAuthenticated, (req, res, next) => {
 
 //  @desc   :For submitting edit page
 //  @route  :POST/edit
-router.post('/edit', ensureAuthenticated, (req, res, next) => {
+router.post('/edit', ensureAuthenticated, updateData, (req, res, next) => {
 
     const { username, name, email, gender, bio, city, state } = req.body;
     let address = [{ city, state }]
@@ -345,16 +338,9 @@ router.post('/edit', ensureAuthenticated, (req, res, next) => {
 
 //  @desc   :For getiing to dashboard
 //  @route  :get/dashborad
-router.get('/dashboard', ensureAuthenticated, (req, res, next) => {
-    console.log(req.user.friendsList);
-    f = req.user.friendsList;
+router.get('/dashboard', ensureAuthenticated, updateData, (req, res, next) => {
 
-    User.aggregate([
-        { $match: { username: req.user.username } },
-        { $unwind: "$friendsList" }
-    ]).then(cb => f = cb);
-    console.log(friends)
-        // console.log(f)
+    // console.log(f)
     res.render('dashboard')
 });
 
@@ -374,7 +360,7 @@ router.get('/search', (req, res, next) => {
             //  console.log(cb)
             res.render('search', { 'List': cb });
         } else
-            res.json("ERROR 404")
+            res.render("404")
     })
 });
 
@@ -407,11 +393,11 @@ router.get('/search/city', async(req, res, next) => {
 
 
 //  @desc   :For usersearching
-//  @route  :POST/user/user/someProfile
+//  @route  :GET/user/searchUser
 // @to:     :tosomeprofile
-router.post('/searchUser', ensureAuthenticated, (req, res, next) => {
+router.get('/searchUser', ensureAuthenticated, (req, res, next) => {
     console.log("in search user")
-    User.findOne({ username: req.body.username }).then(
+    User.findOne({ username: req.query.username }).then(
         (cb) => {
             if (cb) {
                 res.render('someProfile', { 'List': cb })
@@ -421,11 +407,11 @@ router.post('/searchUser', ensureAuthenticated, (req, res, next) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :POST/user/user/someProfile
+//  @route  :GET/user/user/someProfile
 // @to:     :tosomeprofile
-router.post('/searching', ensureAuthenticated, (req, res, next) => {
-    console.log("in search user")
-    User.findOne({ name: req.body.name }).then(
+router.get('/searching', ensureAuthenticated, (req, res, next) => {
+
+    User.findOne({ name: req.query.name }).then(
         (cb) => {
             if (cb) {
                 res.render('someProfile', { 'List': cb })

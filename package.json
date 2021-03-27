@@ -21,6 +21,7 @@
         "flash": "^1.1.0",
         "i": "^0.3.6",
         "jsonwebtoken": "^8.5.1",
+        "method-override": "^3.0.0",
         "mongodb": "^3.6.5",
         "mongoose": "^5.12.1",
         "mongoose-unique-validator": "^2.0.3",
