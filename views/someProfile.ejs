@@ -26,12 +26,7 @@
                                                 <%= List.address[0].state %><br>
 
                     </p>
-                    <%if (List.username != locals.user.username || List.username != locals.user.username.sentRequests.username || List.username._id!= locals.user.friendList.friendId ) { %>
-                        <form action='/user/sendRequest' method="post">
-                            <input type="hidden" name="username" id="username" value="<%=List.username%>">
-                            <button type="submit" class="btn btn-success">Sent Request</buttton>
-                    </form>
-                    <% }%>
+
             </div>
         </div>
     </div>

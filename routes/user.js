@@ -48,9 +48,6 @@ router.post('/sendRequest', ensureAuthenticated, (req, res, next) => {
 //  @from   :list/request
 router.post('/acceptRequest', (req, res, next) => {
     console.log("in ar")
-    console.log(req.body)
-    const id = req.user._id || "605c3ae822550c5b8d01a927";
-    const username = req.user.username || "Macey27";
 
     User.updateOne({
         '_id': req.body._id,
@@ -104,13 +101,12 @@ router.post('/acceptRequest', (req, res, next) => {
 });
 //res.redirect('/dashboard');
 
-
+//change to delete
 //  @desc   :For dropping request
 //  @route :POST/dropRequest
 //  @from  :list/sentrequests
 
 router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
-
     try {
         async.parallel([
             function(callback) {
@@ -160,7 +156,7 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res, next) => {
         console.log(err)
     }
 });
-
+//change to delete
 //  @desc   :For rejecting pending request
 //  @route :POST/dropRequest
 //  @from  :list/sentReuest
@@ -215,15 +211,12 @@ router.post('/dropRequest', ensureAuthenticated, async(req, res, next) => {
     }
 });
 
-
+//change to deleye
 //  @desc   :For dropping friend
 //  @route :POST/dropFriend
 //  @from  :tables/friends
 router.post('/dropFriend', ensureAuthenticated, (req, res, next) => {
-    const user = req.user.username;
-    const sender = req.body.username;
-    console.log(sender)
-    console.log(user)
+
     User.updateOne({
             '_id': req.user._id,
         }, {
@@ -406,9 +399,9 @@ router.get('/search/city', async(req, res, next) => {
 
 
 //  @desc   :For usersearching
-//  @route  :POST/user/user/someProfile
+//  @route  :GET/user/user/someProfile
 // @to:     :tosomeprofile
-router.post('/searchUser', ensureAuthenticated, (req, res, next) => {
+router.get('/searchUser', ensureAuthenticated, (req, res, next) => {
     console.log("in search user")
     User.findOne({ username: req.body.username }).then(
         (cb) => {
@@ -420,11 +413,11 @@ router.post('/searchUser', ensureAuthenticated, (req, res, next) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :POST/user/user/someProfile
+//  @route  :GET/user/user/someProfile
 // @to:     :tosomeprofile
-router.post('/searching', ensureAuthenticated, (req, res, next) => {
-    console.log("in search user")
-    User.findOne({ name: req.body.name }).then(
+router.get('/searching', ensureAuthenticated, (req, res, next) => {
+
+    User.findOne({ name: req.query.name }).then(
         (cb) => {
             if (cb) {
                 res.render('someProfile', { 'List': cb })
