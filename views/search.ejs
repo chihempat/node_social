@@ -46,13 +46,14 @@
                         <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
                     </form>
                 </td>
-                <td>
-                    <form action='/user/sendRequest' method="post">
-                        <input type="hidden" name="username" id="username" value="<%=List[i].username%>">
-                        <button type="submit" class="btn btn-success">Sent Request</buttton>
-                </form>
-                </td>
-                </tr>
+                <% if(!sr.includes(List[i].username)){%>
+                    <td>
+                        <form action='/user/sendRequest' method="POST">
+                            <input type="hidden" name="username" id="username" value="<%=List[i].username%>">
+                            <button type="submit" class="btn btn-success">sentRequest</buttton>
+                        </form>
+                    </td>
+                <% }%>
 
                 <% } %>
             </tbody>

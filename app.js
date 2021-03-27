@@ -18,6 +18,9 @@ var uniqueValidator = require('mongoose-unique-validator');
 //const MongoStore = require('connect-mongo')(session)
 
 
+global.fr = []
+global.rl = []
+global.sr = []
 
 //app use
 const app = express();
