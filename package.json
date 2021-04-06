@@ -9,6 +9,7 @@
     "author": "Chintan",
     "license": "ISC",
     "dependencies": {
+        "async": "^3.2.0",
         "bcryptjs": "^2.4.3",
         "dotenv": "^8.2.0",
         "ejs": "^3.1.6",
@@ -33,5 +34,11 @@
         "passport-google-oauth20": "^2.0.0",
         "passport-jwt": "^4.0.0",
         "passport-local": "^1.0.0"
+    },
+    "devDependencies": {
+        "eslint": "^7.23.0",
+        "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-config-node": "^4.1.0",
+        "eslint-plugin-node": "^11.1.0"
     }
 }
