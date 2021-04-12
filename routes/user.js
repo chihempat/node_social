@@ -19,7 +19,7 @@ const User = require('../models/User');
 
 console.log(User);
 //  @desc   :For sending request
-//  @route :POST/sendRequest
+//  @route :POST/api/user/sendRequest
 router.post('/sendRequest', ensureAuthenticated, check, async (req, res) => {
     try {
         const result1 = await User.updateOne({
@@ -43,7 +43,7 @@ router.post('/sendRequest', ensureAuthenticated, check, async (req, res) => {
 });
 
 //  @desc   :For accepting request
-//  @route  :POST/acceptRequest
+//  @route  :POST/api/user/acceptRequest
 //  @from   :list/request
 router.post('/acceptRequest', async (req, res) => {
     try {
@@ -95,7 +95,7 @@ router.post('/acceptRequest', async (req, res) => {
 
 // change to delete
 //  @desc   :For dropping already sent request
-//  @route :POST/dropSentRequest
+//  @route :POST/api/user/dropSentRequest
 //  @from  :list/sentrequests
 
 router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
@@ -144,7 +144,7 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
 });
 // change to delete
 //  @desc   :For rejecting pending request
-//  @route :POST/dropRequest
+//  @route :POST/api/user/dropRequest
 //  @from  :list/sentReuest
 router.post('/dropRequest', ensureAuthenticated, async(req, res) => {
     try {
@@ -189,7 +189,7 @@ router.post('/dropRequest', ensureAuthenticated, async(req, res) => {
 
 // change to deleye
 //  @desc   :For dropping friend
-//  @route :POST/dropFriend
+//  @route :POST/api/user/dropFriend
 //  @from  :tables/friends
 // eslint-disable-next-line no-undef
 router.post('/dropFriend', ensureAuthenticated, async (req, res) => {
@@ -223,7 +223,7 @@ router.post('/dropFriend', ensureAuthenticated, async (req, res) => {
 });
 
 // @desc   :For showing sent request
-//  @route :GET/sentRequests
+//  @route :GET/api/user/sentRequests
 //  @to  :list/dropRequest
 router.get('/sentRequests', ensureAuthenticated, async(req, res) => {
     const find = await User.findOne({ _id: req.user._id }).lean();
@@ -241,7 +241,7 @@ router.get('/requests', ensureAuthenticated, async(req, res) => {
 });
 
 //  @desc   :For showing friends request
-//  @route  :GET/friends
+//  @route  :GET/api/user/friends
 //  @to     :tables/dropFriend
 router.get('/friends', ensureAuthenticated, (req, res) => {
     const { user } = req;
@@ -260,7 +260,7 @@ router.get('/friends', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For showing esit page
-//  @route  :GET/edit
+//  @route  :GET/api/user/edit
 //  @to     :edit
 router.get('/edit', ensureAuthenticated, (req, res) => {
     const usr = req.user;
@@ -270,7 +270,7 @@ router.get('/edit', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For submitting edit page
-//  @route  :POST/edit
+//  @route  :POST/api/user/edit
 router.post('/edit', ensureAuthenticated, updateData, (req, res) => {
     const {
         username,
@@ -302,7 +302,7 @@ router.post('/edit', ensureAuthenticated, updateData, (req, res) => {
 });
 
 //  @desc   :For getiing to dashboard
-//  @route  :get/dashborad
+//  @route  :get/api/user/dashborad
 router.get('/dashboard', ensureAuthenticated, updateData, (req, res) => {
     // console.log(f)
     res.render('dashboard');
@@ -315,7 +315,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For searchiing all memeber
-//  @route  :GET/serach
+//  @route  :GET/api/user/serach
 
 router.get('/search', (req, res) => {
     User.find({}).then((cb) => {
@@ -327,7 +327,7 @@ router.get('/search', (req, res) => {
 });
 
 //  @desc   :For sorting by state
-//  @route  :GET/user/search/state
+//  @route  :GET/api/user/search/state
 router.get('/search/state', (req, res) => {
     User.find({}).sort({ 'address.state': 1 }).then((cb) => {
         if (cb) {
@@ -340,7 +340,7 @@ router.get('/search/state', (req, res) => {
 });
 
 //  @desc   :For sorting by citty
-//  @route  :GET/user/search/city
+//  @route  :GET/api/user/search/city
 router.get('/search/city', async(req, res) => {
     const List = await User.find({}).sort({ 'address.city': 1 }).exec();
     if (List) {
@@ -352,7 +352,7 @@ router.get('/search/city', async(req, res) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :GET/user/searchUser
+//  @route  :GET/api/user/searchUser
 // @to:     :tosomeprofile
 router.get('/searchUser', ensureAuthenticated, (req, res) => {
     console.log('in search user');
@@ -366,7 +366,7 @@ router.get('/searchUser', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :GET/user/user/someProfile
+//  @route  :GET/api/user/searching
 // @to:     :tosomeprofile
 router.get('/searching', ensureAuthenticated, (req, res) => {
     User.findOne({ name: req.query.name }).then(
