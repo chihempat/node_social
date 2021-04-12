@@ -6,3 +6,5 @@ Social media app in Nodejs and Mongo
 ->EJS Templeleting
 ->Restful API
 
+![SS](/ss/dashboard.png)    
+
