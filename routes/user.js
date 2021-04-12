@@ -19,109 +19,91 @@ const User = require('../models/User');
 
 console.log(User);
 //  @desc   :For sending request
-//  @route :POST/sendRequest
-router.post('/sendRequest', ensureAuthenticated, check, (req, res) => {
-    User
-        .updateOne({
+//  @route :POST/api/user/sendRequest
+router.post('/sendRequest', ensureAuthenticated, check, async (req, res) => {
+    try {
+        const result1 = await User.updateOne({
             username: req.body.username,
             'requestList.userId': { $ne: req.user._id },
             'friendsList.friendId': { $ne: req.user._id },
         }, {
             $push: { requestList: { userId: req.user._id, username: req.user.username } },
-        }, { new: true })
-        .then((cb) => {
-            if (cb) {
-                console.log('in sendRequest Part two');
-                User
-                    .updateOne({
-                        username: req.user.username,
-                        'sentRequests.username': { $ne: req.body.username },
-                    }, { $push: { sendRequests: { username: req.body.username } } })
-                    .then((cb1) => {
-                        if (cb1) {
-                            console.log('REQ Sent');
-                            console.log(cb1);
-                            res.redirect('/search');
-                        } else {
-                            res.render('404');
-                        }
-                    }).catch((err) => console.log(err));
-            } else {
-                res.redirect('404');
-            }
-        });
+        }, { new: true });
+        const result2 = await User
+            .updateOne({
+                username: req.user.username,
+                'sentRequests.username': { $ne: req.body.username },
+            }, { $push: { sendRequests: { username: req.body.username } } });
+        console.log(result1, result2);
+        res.redirect('/api/user/sentRequests');
+    } catch (err) {
+        console.log(err);
+        res.render('404');
+    }
 });
 
 //  @desc   :For accepting request
-//  @route  :POST/acceptRequest
+//  @route  :POST/api/user/acceptRequest
 //  @from   :list/request
-router.post('/acceptRequest', (req, res) => {
-    console.log('in ar');
-    User.updateOne({
-        _id: req.body._id,
-        'friendsList.friendId': { $ne: req.user._id },
-    }, {
-        $push: {
-            friendsList: {
-                friendId: req.user._id,
-                friendName: req.user.username,
-            },
-        },
-        $pull: {
-            sendRequests: {
-                username: req.user.username,
-            },
-        },
-    }, { new: true }).then((cb) => {
-        if (cb) {
-            console.log('done sender part');
-            console.log(cb);
-            User.updateOne({
-                _id: req.user._id,
-                'friendsList.friendId': { $ne: req.body._id },
-            }, {
-                $push: {
-                    friendsList: {
-                        friendId: req.body._id,
-                        friendName: req.body.username,
-                    },
+router.post('/acceptRequest', async (req, res) => {
+    try {
+        console.log('in ar');
+        const result1 = await User.updateOne({
+            _id: req.body._id,
+            'friendsList.friendId': { $ne: req.user._id },
+        }, {
+            $push: {
+                friendsList: {
+                    friendId: req.user._id,
+                    friendName: req.user.username,
                 },
-                $pull: {
-                    requestList: {
-                        userId: req.body._id,
-                        username: req.body.username,
-                    },
+            },
+            $pull: {
+                sendRequests: {
+                    username: req.user.username,
                 },
-            }).then((us) => {
-                if (us) {
-                    console.log(us);
-                    console.log('done user part');
-                    res.redirect('/friends');
-                } else {
-                    res.redirect('404');
-                }
-            }).catch((err) => console.log(err));
-        } else {
-            res.redirect('404');
-        }
-    }, { new: true }).catch((err) => console.log(err));
+            },
+        }, { new: true });
+
+        const result2 = await User.updateOne({
+            _id: req.user._id,
+            'friendsList.friendId': { $ne: req.body._id },
+        },
+        {
+            $push: {
+                friendsList: {
+                    friendId: req.body._id,
+                    friendName: req.body.username,
+                },
+            },
+            $pull: {
+                requestList: {
+                    userId: req.body._id,
+                    username: req.body.username,
+                },
+            },
+        }, { new: true });
+        console.log(result1, result2);
+        res.redirect('/api/user/friends');
+    } catch (err) {
+        console.log(err);
+        res.render('404');
+    }
 });
 
 // res.redirect('/dashboard');
 
 // change to delete
 //  @desc   :For dropping already sent request
-//  @route :POST/dropSentRequest
+//  @route :POST/api/user/dropSentRequest
 //  @from  :list/sentrequests
 
 router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
     try {
         async.parallel([
-            (callback) => {
-                console.log('1');
+            async (callback) => {
                 if (req.body.username) {
-                    console.log('2');
-                    User.updateOne({
+                    const result = await User.updateOne({
                         username: req.body.username,
                         'requestList.userId': { $eq: req.user._id },
                     }, {
@@ -131,18 +113,13 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
                                 username: req.body.username,
                             },
                         },
-                    }, (err, count) => {
-                        console.log('3');
-                        callback(err, count);
                     });
+                    callback(result);
                 }
             },
-            (callback) => {
-                console.log('4');
+            async (callback) => {
                 if (req.body.username) {
-                    console.log('5');
-
-                    User.updateOne({
+                    const result = await User.updateOne({
                         username: req.user.username,
                         'sendRequests.username': { $eq: req.body.username },
                     }, {
@@ -151,85 +128,73 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
                                 username: req.body.username,
                             },
                         },
-                    }, (err, count) => {
-                        console.log('6');
-                        callback(err, count);
                     });
+                    callback(result);
                 }
             },
         ], (err, results) => {
             console.log(err);
             console.log(results);
-            res.redirect('/');
+            res.redirect('/api/user/sentRequests');
         });
     } catch (err) {
         console.log(err);
+        res.redirect('/api/user/sentRequests');
     }
 });
 // change to delete
 //  @desc   :For rejecting pending request
-//  @route :POST/dropRequest
+//  @route :POST/api/user/dropRequest
 //  @from  :list/sentReuest
 router.post('/dropRequest', ensureAuthenticated, async(req, res) => {
     try {
         async.parallel([
-            (callback) => {
-                console.log('1');
-                if (req.user._id) {
-                    console.log('2');
-                    User.updateOne({
-                        _id: req.user._id,
-                        'requestList.userId': { $eq: req.body._id },
-                    }, {
-                        $pull: {
-                            requestList: {
-                                userId: req.body._id,
-                                username: req.body.username,
-                            },
+            async (callback) => {
+                const result = await User.updateOne({
+                    _id: req.user._id,
+                    'requestList.userId': { $eq: req.body._id },
+                }, {
+                    $pull: {
+                        requestList: {
+                            userId: req.body._id,
+                            username: req.body.username,
                         },
-                    }, (err, count) => {
-                        console.log('3');
-                        callback(err, count);
-                    });
-                }
+                    },
+                });
+                callback(result);
             },
-            (callback) => {
-                console.log('4');
-                if (req.user._id) {
-                    console.log('5');
-                    User.updateOne({
-                        _id: req.body._id,
-                        'sendRequests.username': { $eq: req.body.username },
-                    }, {
-                        $pull: {
-                            sendRequests: {
-                                username: req.body.username,
-                            },
+            async (callback) => {
+                const result = await User.updateOne({
+                    _id: req.body._id,
+                    'sendRequests.username': { $eq: req.body.username },
+                }, {
+                    $pull: {
+                        sendRequests: {
+                            username: req.body.username,
                         },
-                    }, (err, count) => {
-                        console.log('6');
-                        callback(err, count);
-                    });
-                }
+                    },
+                });
+                callback(result);
             },
         ], (err, results) => {
             console.log(err);
             console.log(results);
-            res.redirect('/');
+            res.redirect('/api/user/friends');
         });
     } catch (err) {
         console.log(err);
+        res.render('404');
     }
 });
 
 // change to deleye
 //  @desc   :For dropping friend
-//  @route :POST/dropFriend
+//  @route :POST/api/user/dropFriend
 //  @from  :tables/friends
 // eslint-disable-next-line no-undef
-router.post('/dropFriend', ensureAuthenticated, (req, res) => {
-    User
-        .updateOne({
+router.post('/dropFriend', ensureAuthenticated, async (req, res) => {
+    try {
+        const result1 = await User.updateOne({
             _id: req.user._id,
         }, {
             $pull: {
@@ -238,44 +203,31 @@ router.post('/dropFriend', ensureAuthenticated, (req, res) => {
                     friendName: req.body.username,
                 },
             },
-        }).then((cb) => {
-            if (cb) {
-                console.log('Friend dropped');
-                console.log(cb);
-            } else {
-                console.log('error');
-            }
-        })
-        .catch((err) => { console.log(err); });
-    User.updateOne({
-        _id: req.body._id,
-    }, {
-        $pull: {
-            friendsList: {
-                friendId: req.user._id,
-                friendName: req.user.username,
+        });
+        const result2 = await User.updateOne({
+            _id: req.body._id,
+        }, {
+            $pull: {
+                friendsList: {
+                    friendId: req.user._id,
+                    friendName: req.user.username,
+                },
             },
-        },
-    }).then((cb) => {
-        if (cb) {
-            console.log('requestList dropped');
-            console.log(cb);
-            res.render('/profile');
-        } else {
-            console.log('error');
-        }
-    }).catch((err) => console.log(err));
-
-    res.redirect('/profile');
+        });
+        console.log(result1, result2);
+        res.redirect('/api/user/friends');
+    } catch (e) {
+        console.log(e);
+        res.render('404');
+    }
 });
 
 // @desc   :For showing sent request
-//  @route :GET/sentRequests
+//  @route :GET/api/user/sentRequests
 //  @to  :list/dropRequest
 router.get('/sentRequests', ensureAuthenticated, async(req, res) => {
     const find = await User.findOne({ _id: req.user._id }).lean();
     const request = find.sendRequests;
-    //  console.log(request[0].username)
     res.render('list', { List: request, route: 'dropSentRequest' });
 });
 
@@ -289,7 +241,7 @@ router.get('/requests', ensureAuthenticated, async(req, res) => {
 });
 
 //  @desc   :For showing friends request
-//  @route  :GET/friends
+//  @route  :GET/api/user/friends
 //  @to     :tables/dropFriend
 router.get('/friends', ensureAuthenticated, (req, res) => {
     const { user } = req;
@@ -308,7 +260,7 @@ router.get('/friends', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For showing esit page
-//  @route  :GET/edit
+//  @route  :GET/api/user/edit
 //  @to     :edit
 router.get('/edit', ensureAuthenticated, (req, res) => {
     const usr = req.user;
@@ -318,7 +270,7 @@ router.get('/edit', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For submitting edit page
-//  @route  :POST/edit
+//  @route  :POST/api/user/edit
 router.post('/edit', ensureAuthenticated, updateData, (req, res) => {
     const {
         username,
@@ -350,7 +302,7 @@ router.post('/edit', ensureAuthenticated, updateData, (req, res) => {
 });
 
 //  @desc   :For getiing to dashboard
-//  @route  :get/dashborad
+//  @route  :get/api/user/dashborad
 router.get('/dashboard', ensureAuthenticated, updateData, (req, res) => {
     // console.log(f)
     res.render('dashboard');
@@ -363,7 +315,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For searchiing all memeber
-//  @route  :GET/serach
+//  @route  :GET/api/user/serach
 
 router.get('/search', (req, res) => {
     User.find({}).then((cb) => {
@@ -375,7 +327,7 @@ router.get('/search', (req, res) => {
 });
 
 //  @desc   :For sorting by state
-//  @route  :GET/user/search/state
+//  @route  :GET/api/user/search/state
 router.get('/search/state', (req, res) => {
     User.find({}).sort({ 'address.state': 1 }).then((cb) => {
         if (cb) {
@@ -388,7 +340,7 @@ router.get('/search/state', (req, res) => {
 });
 
 //  @desc   :For sorting by citty
-//  @route  :GET/user/search/city
+//  @route  :GET/api/user/search/city
 router.get('/search/city', async(req, res) => {
     const List = await User.find({}).sort({ 'address.city': 1 }).exec();
     if (List) {
@@ -400,7 +352,7 @@ router.get('/search/city', async(req, res) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :GET/user/searchUser
+//  @route  :GET/api/user/searchUser
 // @to:     :tosomeprofile
 router.get('/searchUser', ensureAuthenticated, (req, res) => {
     console.log('in search user');
@@ -414,7 +366,7 @@ router.get('/searchUser', ensureAuthenticated, (req, res) => {
 });
 
 //  @desc   :For usersearching
-//  @route  :GET/user/user/someProfile
+//  @route  :GET/api/user/searching
 // @to:     :tosomeprofile
 router.get('/searching', ensureAuthenticated, (req, res) => {
     User.findOne({ name: req.query.name }).then(

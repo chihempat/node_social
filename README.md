@@ -3,6 +3,15 @@
 
 Social media app in Nodejs and Mongo 
 ->Passport-Local Auth
-->EJS Templeleting
+->EJS Templating
 ->Restful API
+
+![dash](/ss/dashboard.png)      
+    
+![members](/ss/members.png)         
+
+![home](/ss/home.png)           
+    
+
+
 

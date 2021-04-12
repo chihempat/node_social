@@ -2,7 +2,7 @@
     <% if(!List){%>
         <div class="alert alert-dismissible alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Oh snap!</strong> <a href="/dashboard" class="alert-link">You Didnt Sent any friend Requests</a>
+            <strong>Oh snap!</strong> <a href="/api/user/dashboard" class="alert-link">You Didnt Sent any friend Requests</a>
         </div>
         <% }else{ %>
 
@@ -30,7 +30,7 @@
                             </td>
 
                             <td>
-                                <form method="GET" action="/user/searchUser">
+                                <form method="GET" action="/api/user/searchUser">
                                     <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                     <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
                                 </form>
@@ -38,7 +38,7 @@
 
                             <% if(route=="dropRequest") {%>
                                 <td>
-                                    <form method="POST" action="/user/acceptRequest">
+                                    <form method="POST" action="/api/user/acceptRequest">
                                         <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                         <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
                                         <button type="submit" class="btn btn-outline-success">Accept Request</button>
@@ -46,7 +46,7 @@
                                 </td>
                                 <td>
 
-                                    <form method="POST" action="/user/dropRequest">
+                                    <form method="POST" action="/api/user/dropRequest">
                                         <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                         <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
                                         <button type="submit" class="btn btn-outline-danger">Reject Request</button>
@@ -55,7 +55,7 @@
                                 </td>
                                 <% }else{%>
                                     <td>
-                                        <form method="POST" action="/user/dropSentRequest">
+                                        <form method="POST" action="/api/user/dropSentRequest">
                                             <input type="hidden" class="form-control" name="username" value='<%=List[i].username %>'>
                                             <input type="hidden" class="form-control" name="_id" value='<%=List[i].userId %>'>
                                             <button type="submit" class="btn btn-outline-danger">Drop Request</button>

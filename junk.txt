@@ -1,0 +1,170 @@
+User.findOne({ _id: user._id }).then((cb) => {
+    if (cb) {
+        List = cb.sentList;
+        console.log(List[0]);
+        User.find({});
+        res.render('tables', { List: List });
+    } else {
+        res.render('./partials/404');
+    }
+}).catch((err) => console.log(err));
+
+User.aggregate([
+    { $unwind: '$requestList' },
+    { $match: { 'requestList.username': user } },
+]).then((cb) => {
+    if (cb) {
+        console.log(cb);
+        res.render('tables', { List: cb });
+    } else {
+        res.render('./partials/404');
+    }
+}).catch((err) => console.log(err));
+
+router.get('/requests', ensureAuthenticated, (req, res, next) => {
+    const user = req.user.username;
+    User.aggregate([{
+        $unwind: '$sendList',
+    },
+    {
+        $match: { 'sendList.username': user },
+    },
+    ]).then((cb) => {
+        if (cb) {
+            if (cb) {
+                console.log(cb);
+                res.render('tables', { List: cb });
+            }
+        } else {
+            res.render('404');
+        }
+    }).catch((err) => console.log(err));
+});
+
+router.get('/friends', ensureAuthenticated, (req, res, next) => {
+    const user = req.user.username;
+    User.aggregate([
+        { $unwind: '$friendsList' },
+        { $match: { username: 'user.friendsList.username' } },
+    ]).then((cb) => {
+        if (cb) {
+            console.log(cb);
+            res.render('tables', { List: cb, route: 'drop' });
+        }
+        res.render('partials/404');
+    }).catch((err) => console.log(err));
+});
+
+router.post('/acceptRequest', (req, res, next) => {
+    console.log('in ar');
+    console.log(req.body);
+    const id = req.user._id || '605c3ae822550c5b8d01a927';
+    const username = req.user.username || 'Macey27';
+
+    async.parallel({
+        function(callback) {
+            console.log('user');
+            User.updateOne({
+                _id: id,
+                'friendsList.friendId': { $ne: req.body.uid },
+            }, {
+                $push: {
+                    friendsList: {
+                        friendId: req.body.uid,
+                        friendName: req.body.username,
+                    },
+                },
+                $pull: {
+                    requestList: {
+                        userId: req.body.uid,
+                        username: req.body.username,
+                    },
+                },
+            }, (err, count) => {
+                callback(err, count);
+            });
+        },
+
+        function(callback) {
+            console.log('sendet');
+
+            User.updateOne({
+                _id: req.body.uid,
+                // 'friendsList.friendId': { $ne: req.user._id }
+            }, {
+                $push: {
+                    friendsList: {
+                        friendId: id,
+                        friendName: username,
+                    },
+                },
+                $pull: {
+                    sendRequests: {
+                        username: username,
+                    },
+                },
+            }).then((cb) => {
+                if (cb) {
+                    console.log('done');
+                } else {
+                    res.redirect('404');
+                }
+            }).catch((err) => console.log(err));
+        },
+
+    });
+    // res.redirect('/dashboard')
+});
+
+User.updateOne({
+    _id: req.user._id,
+    'sendRequest.username': { $eq: req.body.username },
+}, {
+    $pull: {
+        sendRequest: {
+            username: req.body.username,
+        },
+    },
+}).then((cb) => {
+    if (cb) {
+        console.log('sendRequest dropped');
+        console.log(cb);
+    } else {
+        console.log('error');
+    }
+})
+    .catch((err) => { console.log(err); });
+
+User.updateOne({
+    username: req.body.username,
+    'requestList.userId': { $eq: req.user._id },
+}, {
+    $pull: {
+        requestList: {
+            userId: req.user._id,
+            username: req.user.username,
+        },
+    },
+}).then((cb) => console.log((cb) => {
+    if (cb) {
+        console.log('firends dropped');
+        // console.log(cb)
+    } else {
+        console.log('error');
+    }
+})).catch((err) => console.log(err));
+
+list = {
+    search: '<form method="POST" action="/user/searchUser">',
+    search: '<form action=\'/user/sendRequest\' method="post">',
+    someProfile: '<form action=\'/user/sendRequest\' method="post">',
+    list: '<form method="POST" action="/user/searchUser">',
+    list: '<form method="POST" action="/user/acceptRequest">',
+    list: ' <form method="POST" action="/user/dropRequest">',
+    list: '<form method="POST" action="/user/dropSentRequest">',
+    tables: '<form method="POST" action="/user/searchUser">',
+    tables: '<form method="POST" action="/user/<%=route%>">',
+    edit: '<form action="/user/edit" method="POST">',
+    header: ' <form class="form-inline my-2 my-lg-0" action=\'/user/searching\' method="POST">',
+
+};

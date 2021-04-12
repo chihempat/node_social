@@ -37,13 +37,13 @@
                                 <%= List[i].gender %>
                             </td>
                             <td>
-                                <form method="GET" action="/user/searchUser">
+                                <form method="GET" action="/api/user/searchUser">
                                     <input type="hidden" class="form-control" name="username" value='<%=List[i].username%>'>
                                     <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
                                 </form>
                             </td>
                             <td>
-                                <form method="POST" action="/user/<%=route%>">
+                                <form method="POST" action="/api/user/<%=route%>">
                                     <input type="hidden" class="form-control" name="username" value='<%=List[i].username%>'>
                                     <input type="hidden" class="form-control" name="_id" value='<%=List[i]._id%>'>
                                     <button type="submit" class="btn btn-outline-danger"><%=route%></button>
