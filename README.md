@@ -6,11 +6,11 @@ Social media app in Nodejs and Mongo
 ->EJS Templating
 ->Restful API
 
-![dash](/ss/dashboard.png)\
+![dash](/ss/dashboard.png)      
     
-![members](/ss/members.png)\
+![members](/ss/members.png)         
 
-![home](/ss/home.png)\
+![home](/ss/home.png)           
     
 
 
