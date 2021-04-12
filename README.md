@@ -9,8 +9,7 @@ Social media app in Nodejs and Mongo
 ![dash](/ss/dashboard.png)      
     
 ![members](/ss/members.png)         
-
-![home](/ss/home.png)           
+   
     
 
 
