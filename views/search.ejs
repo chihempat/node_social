@@ -5,9 +5,9 @@
         </h1>
     </p>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <a href="/user/search" class="btn btn-secondary">ALL</a></button>
-        <a href="/user/search/state" class="btn btn-secondary">Filter BY State</a>
-        <a href="/user/search/city" class="btn btn-secondary">Filter By City</a>
+        <a href="/api/user/search" class="btn btn-secondary">ALL</a></button>
+        <a href="/api/user/search/state" class="btn btn-secondary">Filter BY State</a>
+        <a href="/api/user/search/city" class="btn btn-secondary">Filter By City</a>
     </div>
     <table class="table table-hover" style="column-gap: 40px">
         <thead class="thead-dark">
@@ -40,7 +40,7 @@
                     <%= List[i].address[0].state %>
                 </td>
                 <td>
-                    <form method="GET" action="/user/searchUser">
+                    <form method="GET" action="/api/user/searchUser">
                         <input type="hidden" class="form-control" id="username" name="username" value='<%=List[i].username%>'>
                         <input type="hidden" class="form-control" id="name" name="name" value='<%=List[i].name%>'>
                         <button type="submit" class="btn btn-outline-primary">Visit Profile</button>
@@ -48,7 +48,7 @@
                 </td>
                 <% if(!sr.includes(List[i].username)){%>
                     <td>
-                        <form action='/user/sendRequest' method="POST">
+                        <form action='/api/user/sendRequest' method="POST">
                             <input type="hidden" name="username" id="username" value="<%=List[i].username%>">
                             <button type="submit" class="btn btn-success">sentRequest</buttton>
                         </form>

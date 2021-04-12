@@ -111,11 +111,11 @@ router.post('/register', forwardAuthenticated, async (req, res) => {
     }
 });
 // Login
-router.post('/login', (req, res, next) => {
+router.post('/login', forwardAuthenticated, (req, res, next) => {
     console.log('in login post');
     passport.authenticate('local', {
-        successRedirect: '/user/dashboard',
-        failureRedirect: '/login',
+        successRedirect: '/api/user/dashboard',
+        failureRedirect: '/api/auth/login',
         failureFlash: true,
     })(req, res, next);
 });
@@ -124,7 +124,7 @@ router.post('/login', (req, res, next) => {
 router.get('/logout', (req, res) => {
     req.logout();
     req.flash('success_msg', 'You are logged out');
-    res.redirect('/login');
+    res.redirect('/api/auth/login');
 });
 
 module.exports = router;

@@ -81,12 +81,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // router
 
 const index = require('./routes/index');
-const user = require('./routes/user');
-const auth = require('./routes/auth');
+// const user = require('./routes/user');
+// const auth = require('./routes/auth');
 
 // routers
-app.use('/user', user);
-app.use('/auth', auth);
+// app.use('/user', user);
+// app.use('/auth', auth);
 app.use('/', index);
 
 // Start Server

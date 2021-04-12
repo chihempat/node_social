@@ -35,7 +35,7 @@ router.post('/sendRequest', ensureAuthenticated, check, async (req, res) => {
                 'sentRequests.username': { $ne: req.body.username },
             }, { $push: { sendRequests: { username: req.body.username } } });
         console.log(result1, result2);
-        res.redirect('./sentRequests');
+        res.redirect('/api/user/sentRequests');
     } catch (err) {
         console.log(err);
         res.render('404');
@@ -84,7 +84,7 @@ router.post('/acceptRequest', async (req, res) => {
             },
         }, { new: true });
         console.log(result1, result2);
-        res.redirect('/user/friends');
+        res.redirect('/api/user/friends');
     } catch (err) {
         console.log(err);
         res.render('404');
@@ -135,11 +135,11 @@ router.post('/dropSentRequest', ensureAuthenticated, async(req, res) => {
         ], (err, results) => {
             console.log(err);
             console.log(results);
-            res.redirect('/user/sentRequests');
+            res.redirect('/api/user/sentRequests');
         });
     } catch (err) {
         console.log(err);
-        res.redirect('/user/sentRequests');
+        res.redirect('/api/user/sentRequests');
     }
 });
 // change to delete
@@ -179,7 +179,7 @@ router.post('/dropRequest', ensureAuthenticated, async(req, res) => {
         ], (err, results) => {
             console.log(err);
             console.log(results);
-            res.redirect('/user/friends');
+            res.redirect('/api/user/friends');
         });
     } catch (err) {
         console.log(err);
@@ -215,7 +215,7 @@ router.post('/dropFriend', ensureAuthenticated, async (req, res) => {
             },
         });
         console.log(result1, result2);
-        res.redirect('/user/friends');
+        res.redirect('/api/user/friends');
     } catch (e) {
         console.log(e);
         res.render('404');
