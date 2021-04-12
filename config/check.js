@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-var */
 module.exports = {
-    updateData: function(req, res, next) {
+    updateData: (req, res, next) => {
         const f = req.user.friendsList || [];
         const s = req.user.sendRequests || [];
         const r = req.user.requestList || [];
@@ -17,28 +18,28 @@ module.exports = {
 
         next();
     },
-    checkfriend: function(req, res, next) {
+    checkfriend: (req, res, next) => {
         if (fr.includes(req.body.username) || fr.includes(req.query.username)) {
             res.redirect('404');
         } else {
             next();
         }
     },
-    checksent: function(req, res, next) {
+    checksent: (req, res, next) => {
         if (sr.includes(req.body.username) || sr.includes(req.query.username)) {
             res.redirect('404');
         } else {
             next();
         }
     },
-    checkrequest: function(req, res, next) {
+    checkrequest: (req, res, next) => {
         if (rl.includes(req.body.username) || rl.includes(req.query.username)) {
             res.redirect('404');
         } else {
             next();
         }
     },
-    check: function(req, res, next) {
+    check: (req, res, next) => {
         const f = req.user.friendsList || [];
         const s = req.user.sendRequests || [];
         const r = req.user.requestList || [];

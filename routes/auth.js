@@ -3,14 +3,15 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const jsonwt = require('jsonwebtoken');
+// const jsonwt = require('jsonwebtoken');
 
-const key = process.env.KEY;
-const LocalStrategy = require('passport-local').Strategy;
+// const key = process.env.KEY;
+// const LocalStrategy = require('passport-local').Strategy;
 
 // Load User model
 const { forwardAuthenticated } = require('../config/auth');
 
+// eslint-disable-next-line import/no-unresolved
 const User = require('../models/User');
 
 router.get('/', forwardAuthenticated, (req, res) => {
