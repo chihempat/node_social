@@ -5,9 +5,9 @@ module.exports = {
         const f = req.user.friendsList || [];
         const s = req.user.sendRequests || [];
         const r = req.user.requestList || [];
-        var sr = [];
-        var rl = [];
-        var fr = [];
+        const sr = [];
+        const rl = [];
+        const fr = [];
         let i = 0;
         for (i = 0; i < s.length; i++) { sr.push(s[i].username); }
         for (i = 0; i < r.length; i++) { rl.push(r[i].username); }
@@ -17,27 +17,6 @@ module.exports = {
         console.log(fr);
 
         next();
-    },
-    checkfriend: (req, res, next) => {
-        if (fr.includes(req.body.username) || fr.includes(req.query.username)) {
-            res.redirect('404');
-        } else {
-            next();
-        }
-    },
-    checksent: (req, res, next) => {
-        if (sr.includes(req.body.username) || sr.includes(req.query.username)) {
-            res.redirect('404');
-        } else {
-            next();
-        }
-    },
-    checkrequest: (req, res, next) => {
-        if (rl.includes(req.body.username) || rl.includes(req.query.username)) {
-            res.redirect('404');
-        } else {
-            next();
-        }
     },
     check: (req, res, next) => {
         const f = req.user.friendsList || [];

@@ -7,4 +7,5 @@ router.use('/', forwardAuthenticated, (req, res) => {
     res.render('welcome', { user: req.user, message: [] });
 });
 
+
 module.exports = router;
