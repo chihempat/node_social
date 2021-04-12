@@ -34,10 +34,10 @@
                     <%= List[i].email %>
                 </td>
                 <td>
-                    <%= JSON.stringify(List[i].address).split('"')[3] %>
+                    <%= List[i].address[0].city %>
                 </td>
-                <td>
-                    <%= JSON.stringify(List[i].address).split('"')[7] %>
+                 <td>
+                    <%= List[i].address[0].state %>
                 </td>
                 <td>
                     <form method="GET" action="/user/searchUser">

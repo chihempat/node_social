@@ -15,7 +15,6 @@ module.exports = {
         console.log(sr);
         console.log(rl);
         console.log(fr);
-
         next();
     },
     check: (req, res, next) => {

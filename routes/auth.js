@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const {getHash}= require('../config/helper');
 // const jsonwt = require('jsonwebtoken');
 
 // const key = process.env.KEY;
@@ -29,7 +30,7 @@ router.get('/register', forwardAuthenticated, (req, res) => {
 });
 
 // Register
-router.post('/register', forwardAuthenticated, (req, res) => {
+router.post('/register', forwardAuthenticated, async (req, res) => {
     // console.trace();
     console.log('in register');
     const {
@@ -52,31 +53,36 @@ router.post('/register', forwardAuthenticated, (req, res) => {
 
     if (!name || !email || !password || !password2 || !username) {
         errors.push({ msg: 'Please enter all fields' });
+        console.log({ msg: 'Please enter all fields' });
     }
 
     // eslint-disable-next-line eqeqeq
     if (password != password2) {
         errors.push({ msg: 'Passwords do not match' });
+        console.log({ msg: 'Passwords do not match' });
+
     }
 
     if (password.length < 6) {
         errors.push({ msg: 'Password must be at least 6 characters' });
+        console.log({ msg: 'Password must be at least 6 characters'  });
+
     }
 
-    if (errors.length > 0) {
-        res.render('register', {
-            errors,
-            username,
-            name,
-            email,
-            password,
-            password2,
-            gender,
-            age,
-            bio,
-            address,
-        });
-    } else {
+    // if (errors.length > 0) {
+    //     res.render('register', {
+    //         errors,
+    //         username,
+    //         name,
+    //         email,
+    //         password,
+    //         password2,
+    //         gender,
+    //         age,
+    //         bio,
+    //         address,
+    //     });
+    // } else {
         User.findOne({ email }).then((user) => {
             if (user) {
                 errors.push({ msg: 'Email already exists' });
@@ -103,27 +109,27 @@ router.post('/register', forwardAuthenticated, (req, res) => {
                     bio,
                     address,
                 });
-
-                bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newUser.password, salt, (err, hash) => {
-                        if (err) throw err;
-                        newUser.password = hash;
-                        newUser
-                            .save()
-                            .then((user) => {
-                                req.flash(
-                                    'success_msg',
-                                    'You are now registered and can log in',
-                                );
-                                console.log(user);
-                                res.redirect('/users/login');
-                            })
-                            .catch((err) => console.log(err));
-                    });
-                });
+                getHash(req, res, newUser);
+                // bcrypt.genSalt(10, (err, salt) => {
+                //     bcrypt.hash(newUser.password, salt, (err, hash) => {
+                //         if (err) throw err;
+                //         newUser.password = hash;
+                //         newUser
+                //             .save()
+                //             .then((user) => {
+                //                 req.flash(
+                //                     'success_msg',
+                //                     'You are now registered and can log in',
+                //                 );
+                //                 console.log(user);
+                //                 res.redirect('/users/login');
+                //             })
+                //             .catch((err) => console.log(err));
+                //     });
+                // });
             }
         });
-    }
+
 });
 // Login
 router.post('/login', (req, res, next) => {
